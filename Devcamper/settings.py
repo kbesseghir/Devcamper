@@ -34,6 +34,7 @@ INSTALLED_APPS = [
     'Authentication',
     'corsheaders',
     'Bootcamps',
+    'django.contrib.gis',
 
 ]
 REST_FRAMEWORK = {
