@@ -1,6 +1,5 @@
 from django.db import models
-from django.contrib.auth.models import AbstractBaseUser, BaseUserManager  
-
+from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
 class CustomUserManager(BaseUserManager):
     def create_user(self, email, password=None, **extra_fields):
         if not email:
@@ -24,7 +23,7 @@ class CustomUserManager(BaseUserManager):
     
 
 
-class CustomUser(AbstractBaseUser):
+class CustomUser(AbstractBaseUser, PermissionsMixin):
     ROLE_CHOICES = (
         ('user', 'User'),
         ('publisher', 'Publisher'),
@@ -41,6 +40,11 @@ class CustomUser(AbstractBaseUser):
     # two_factor_code = models.CharField(max_length=6, blank=True)
     # two_factor_code_expire = models.DateTimeField(null=True, blank=True)
     # two_factor_enable = models.BooleanField(default=False)
+    is_active = models.BooleanField(default=True)  # Add this attribute
+    is_staff = models.BooleanField(default=False)  # Add this attribute
+    is_superuser = models.BooleanField(default=False)  # Add this attribute
+
+
     created_at = models.DateTimeField(auto_now_add=True)
 
     objects = CustomUserManager()

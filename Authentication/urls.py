@@ -3,5 +3,6 @@ from .views import *
 
 urlpatterns = [
     path('register/', UserRegistration.as_view(), name='user-registration'),
-    # Add other URL patterns if needed
+    path('login/', UserLogin.as_view(), name='user-login'),
+    path('logout/', UserLogout.as_view(), name='user-logout'),
 ]
