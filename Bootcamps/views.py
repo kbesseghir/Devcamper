@@ -6,6 +6,9 @@ from rest_framework import filters
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import *
 from permission import *
+from rest_framework.response import Response
+from rest_framework import status
+
 
 class CustomPagination(PageNumberPagination):
     page_size = 10  # Number of items per page
@@ -14,7 +17,7 @@ class CustomPagination(PageNumberPagination):
 
 class AllBootcamp(generics.ListAPIView):
     queryset =Bootcamp.objects.all()
-    Serializer= BootcampSerializer
+    serializer_class = BootcampSerializer  
     pagination_class = CustomPagination  
     filter_backends = [filters.OrderingFilter, filters.SearchFilter]
     ordering_fields = ['name', 'average_rating', 'average_cost']  # Fields for sorting
@@ -26,15 +29,21 @@ class BootcampDetail(generics.RetrieveAPIView):
 
 
 class CreateBootcamp(generics.CreateAPIView):
-    queryset =Bootcamp.objects.all()
-    Serializer= BootcampSerializer
-    permission_classes = [IsPublisherOrAdmin]
-      
-    def perform_create(self, serializer):
-        user = self.request.user
+    queryset = Bootcamp.objects.all()
+    serializer_class = BootcampSerializer
+    permission_classes = [IsAuthenticated]
 
-        # Check if the user is a publisher and has already created a bootcamp
-        if user.role == 'publisher' and Bootcamp.objects.filter(user=user).exists():
-            raise serializers.ValidationError('Publishers can create only one bootcamp.')
+    def create(self, request, *args, **kwargs):
+        # Check if the user has the "publisher" or "admin" role
+        if not request.user.is_superuser and not request.user.role == 'publisher':
+            return Response({'message': 'You do not have permission to create a bootcamp.'}, status=status.HTTP_403_FORBIDDEN)
 
-        serializer.save(user=user) 
+        # Check if the user already has a bootcamp
+        if request.user.role == 'publisher' and request.user.bootcamp_set.exists():
+            return Response({'message': 'You can only create one bootcamp.'}, status=status.HTTP_400_BAD_REQUEST)
+
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save(user=request.user)
+
+        return Response({'message': 'Bootcamp created successfully.'}, status=status.HTTP_201_CREATED) 

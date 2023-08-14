@@ -27,7 +27,7 @@ class Bootcamp(models.Model):
     country = models.CharField(max_length=100, blank=True)
     
     # Other fields
-    careers = models.ManyToManyField('Career', related_name='bootcamps')
+    # careers = models.ManyToManyField('Career', related_name='bootcamps')
     average_rating = models.FloatField(validators=[MinValueValidator(1), MaxValueValidator(10)], blank=True, null=True)
     average_cost = models.FloatField(blank=True, null=True)
     photo = models.ImageField(upload_to='bootcamps/', default='no-photo.jpg')
