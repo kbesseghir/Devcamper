@@ -8,6 +8,7 @@ from rest_framework.permissions import *
 from permission import *
 from rest_framework.response import Response
 from rest_framework import status
+from rest_framework.parsers import FileUploadParser
 
 
 class CustomPagination(PageNumberPagination):
@@ -47,3 +48,50 @@ class CreateBootcamp(generics.CreateAPIView):
         serializer.save(user=request.user)
 
         return Response({'message': 'Bootcamp created successfully.'}, status=status.HTTP_201_CREATED) 
+
+
+class UpdateBootcamp(generics.UpdateAPIView):
+    queryset=Bootcamp.objects.all()
+    serializer_class = BootcampSerializer
+    permission_classes = [IsAuthenticated]
+
+
+    def update (self,request,*args,**kwargs):
+        instance = self.get_object()
+        if instance.user != request.user:
+            return Response({'message': 'You do not have permission to update this bootcamp.'}, status=status.HTTP_403_FORBIDDEN)
+        
+        serializer= self.get_serializer(instance,data=request.data,partial=True)
+        serializer.is_valid(raise_exception=True)
+
+        serializer.save()
+
+
+        return Response({'message': 'Bootcamp updated successfully.'}, status=status.HTTP_200_OK)
+
+
+class DeleteBootcamp(generics.DestroyAPIView):
+    queryset=Bootcamp.objects.all()
+    serializer_class = BootcampSerializer
+    permission_classes = [IsAuthenticated]
+
+    def Destroy(self, request, *args, **kwargs):
+        instance = self.get_object
+
+        if instance.user != request.user:
+            return Response({'message': 'You do not have permission to update this bootcamp.'}, status=status.HTTP_403_FORBIDDEN)
+        
+
+        self.perform_destroy(instance)
+
+        return Response({'message': 'Bootcamp deleted successfully.'}, status=status.HTTP_204_NO_CONTENT)
+
+
+class UploadBootcampPhoto(generics.CreateAPIView):
+    queryset = Bootcamp.objects.all()
+    serializer_class = BootcampSerializer
+    permission_classes = [IsAuthenticated]
+    parser_classes = [FileUploadParser]
+
+    def perform_create(self, serializer):
+        serializer.save(photo=self.request.data.get('photo'))
