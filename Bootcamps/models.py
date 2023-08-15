@@ -64,8 +64,7 @@ class Bootcamp(models.Model):
 class Career(models.Model):
     name = models.CharField(max_length=100, unique=True)
 
-class Course(models.Model):
-    bootcamp = models.ForeignKey(Bootcamp, on_delete=models.CASCADE, related_name='courses')
+
     # Define other course fields
 
 class Review(models.Model):
