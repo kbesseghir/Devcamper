@@ -3,6 +3,7 @@ from rest_framework import generics
 from rest_framework.response import Response
 from rest_framework import status
 import Authentication
+from rest_framework.permissions import IsAuthenticated ,IsAdminUser
 from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
 
@@ -11,6 +12,8 @@ from .serializers import *
 from django.core.validators import EmailValidator
 from django.core.exceptions import ValidationError
 from rest_framework.throttling import UserRateThrottle
+from permission import *
+from .models import *
 
 import logging
 
@@ -88,5 +91,67 @@ class UserLogout(APIView):
         return response
 
 
+
+class GetCurrentUser(generics.RetrieveAPIView):
+    permission_classes = (IsAuthenticated)
+    serializer_class = UserSerializer
+
+    def get_object(self):
+        return self.request.user
+
+class UpdateUserInfo(generics.RetrieveUpdateAPIView):
+    permission_classes = (IsAuthenticated,)
+    serializer_class = UserSerializer
+
+class UpdateUserPassword(generics.RetrieveUpdateAPIView):
+    permission_classes = (IsAuthenticated,)
+    serializer_class = UserSerializer
+
+
+    def update (self,request,**kwargs):
+        user=self.get_object()
+        serializer = self.get_serializer(date=request.data)
+
+        if serializer.is_valid():
+
+            old_password=serializer.validate_data['old_password']
+            if not user.checke_password(old_password):
+                return Response({'error': 'Old password is incorrect.'}, status=status.HTTP_400_BAD_REQUEST)
+            
+            new_password = serializer.validate_data['new_password']
+            user.set_password(new_password)
+            user.save()
+            return Response({'message': 'Password updated successfully.'}, status=status.HTTP_200_OK)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST) 
+
+
+
+
+
+class CreateUserView(generics.CreateAPIView):
+    permission_classes = (IsAdminUser,)
+    serializer_class = UserSerializer
+
+
+class UserListView(generics.ListAPIView):
+    permission_classes = (IsAdminUser,)
+    queryset = CustomUser.objects.all()
+    serializer_class = UserSerializer
+
+class UserDetailsView(generics.RetrieveAPIView):
+    permission_classes = (IsAdminUser,)
+    queryset = CustomUser.objects.all()
+    serializer_class = UserSerializer
+
+
+class UpdateUserView(generics.UpdateAPIView):
+    permission_classes = (IsAdminUser,)
+    queryset = CustomUser.objects.all()
+    serializer_class = UserSerializer
+
+class DeleteUserView(generics.DestroyAPIView):
+    permission_classes = (IsAdminUser,)
+    queryset = CustomUser.objects.all()
 
 
