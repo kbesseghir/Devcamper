@@ -27,7 +27,7 @@ class AllCourses(generics.ListAPIView):
 
 class CourseDetail(generics.RetrieveAPIView):
     queryset =Course.objects.all()
-    Serializer= CourseSerializer
+    serializer_class = CourseSerializer
     
 
 class CreateCourse(generics.CreateAPIView):
@@ -35,15 +35,17 @@ class CreateCourse(generics.CreateAPIView):
     serializer_class = CourseSerializer
     permission_classes = [IsOwnerOrAdmin]
 
-    def create(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.data)
+    def perform_create(self, serializer):
+        title = serializer.validated_data['title']
+        if Course.objects.filter(title=title).exists():
+          return Response({'message': 'Course with this title already exists.'}), 
         serializer.is_valid(raise_exception=True)
         serializer.save(user=self.request.user)
         return Response({'message': 'Course created successfully.'}, status=status.HTTP_201_CREATED) 
 
 
 
-class UpdateCourse(generics.UpdateAPIView):
+class UpdateCourse(generics.RetrieveUpdateAPIView):
     queryset = Course.objects.all()
     serializer_class = CourseSerializer
     permission_classes = [IsOwnerOrAdmin]  # Use the custom permission class
@@ -62,6 +64,7 @@ class UpdateCourse(generics.UpdateAPIView):
 class DeleteCourse(generics.DestroyAPIView):
     queryset = Course.objects.all()
     serializer_class = CourseSerializer
+
     permission_classes = [IsOwnerOrAdmin]  # Use the custom permission class
 
     def destroy(self, request, *args, **kwargs):

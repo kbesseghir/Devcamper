@@ -1,6 +1,8 @@
 from django.db import models
 from Bootcamps.models import *
 from Authentication.models import *
+from django.db.models.signals import post_save, post_delete
+from django.dispatch import receiver
 
 class Course(models.Model):
 
@@ -24,5 +26,29 @@ class Course(models.Model):
 
     class Meta:
         verbose_name_plural = 'Courses'
-        
-    
+
+@receiver (post_save,sender=Course,)
+def update_average_cost_on_save(sender,instance,**kagr):
+
+    bootcamp = instance.bootcamp
+
+    average_cost=Course.objects.filter(bootcamp=bootcamp).aggregate(models.Avg('tuition'))['tuition__avg']
+    if average_cost is not None:
+        bootcamp.average_cost = round(average_cost,2)
+        bootcamp.save()
+
+@receiver(post_delete, sender=Course)
+def update_average_cost_on_delete(sender, instance, **kwargs):
+    bootcamp = instance.bootcamp
+    average_cost = Course.objects.filter(bootcamp=bootcamp).aggregate(models.Avg('tuition'))['tuition__avg']
+    if average_cost is not None:
+        bootcamp.average_cost = round(average_cost, 2)
+    else:
+        bootcamp.average_cost = None
+    bootcamp.save()
+
+
+@receiver(post_save, sender=Course)
+def update_average_cost_on_tuition_update(sender, instance, **kwargs):
+    if not instance._state.adding and instance.tuition != instance.tuition:
+        update_average_cost_on_save(sender, instance, **kwargs)

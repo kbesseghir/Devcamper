@@ -36,6 +36,7 @@ INSTALLED_APPS = [
     'Bootcamps',
     'django.contrib.gis',
     'Courses',
+    'Reviews'
 
 ]
 REST_FRAMEWORK = {

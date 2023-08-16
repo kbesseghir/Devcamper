@@ -15,21 +15,26 @@ from rest_framework.throttling import UserRateThrottle
 import logging
 
 class UserRegistration(generics.CreateAPIView):
-
+    
+    serializer_class = UserSerializer 
     def create(self, request, *args, **kwargs):
-        # ...
-
         try:
-            response = super().create(request, *args, **kwargs)
-            if response.status_code == status.HTTP_201_CREATED:
-                user = response.data
-                if 'password' in user:
-                    user.pop('password')
-                logging.Logger.info(f"User registered: {user['email']}")
-                return Response(user, status=status.HTTP_201_CREATED)
-            return response
+            serializer = self.get_serializer(data=request.data)
+            serializer.is_valid(raise_exception=True)
+            self.perform_create(serializer)
+            
+            user = serializer.data
+            if 'password' in user:
+                user.pop('password')
+
+            logger = logging.getLogger(__name__)
+            logger.info(f"User registered: {user['email']}")
+
+            headers = self.get_success_headers(serializer.data)
+            return Response(user, status=status.HTTP_201_CREATED, headers=headers)
         except Exception as e:
-            logging.Logger.error(f"User registration failed: {e}")
+            logger = logging.getLogger(__name__)
+            logger.error(f"User registration failed: {e}")
             raise
 
 class UserLogin(APIView):

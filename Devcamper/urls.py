@@ -10,7 +10,9 @@ urlpatterns = [
     path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('Auth/',include('Authentication.urls')),
     path('Bootcamps/',include('Bootcamps.urls')),
-    path('Courses/',include('Courses.urls'))
+    path('Courses/',include('Courses.urls')),
+    path('Reviews/',include('Reviews.urls'))
+
 
 
 ]
