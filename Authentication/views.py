@@ -6,6 +6,7 @@ import Authentication
 from rest_framework.permissions import IsAuthenticated ,IsAdminUser
 from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
+from django_rest_passwordreset.views import ResetPasswordRequestToken, ResetPasswordConfirm
 
 from Authentication.models import *
 from .serializers import *
@@ -155,3 +156,23 @@ class DeleteUserView(generics.DestroyAPIView):
     queryset = CustomUser.objects.all()
 
 
+
+
+
+# class PasswordResetView(PasswordResetView):
+#     permission_classes = (IsAuthenticated,)
+
+#     def post(self, request, *args, **kwargs):
+#         """
+#         Send a password reset email to the user.
+#         """
+#         email = request.data["email"]
+
+#         user = get_user_by_email(email)
+#         if not user:
+#             raise NotFound("User not found")
+
+#         token = generate_password_reset_token(user)
+#         send_password_reset_email(user, token)
+
+#         return Response(status=status.HTTP_202_ACCEPTED)

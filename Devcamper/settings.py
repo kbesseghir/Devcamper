@@ -36,7 +36,8 @@ INSTALLED_APPS = [
     'Bootcamps',
     'django.contrib.gis',
     'Courses',
-    'Reviews'
+    'Reviews',
+    'django_rest_passwordreset',
 
 ]
 REST_FRAMEWORK = {
@@ -178,3 +179,10 @@ LOGGING = {
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",  # Add your frontend's origin
 ]
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'kheirabesseghir06@gmail.com'
+EMAIL_HOST_PASSWORD = 'uxrhajpudkrztvmp'
