@@ -101,10 +101,12 @@ class GetCurrentUser(generics.RetrieveAPIView):
         return self.request.user
 
 class UpdateUserInfo(generics.RetrieveUpdateAPIView):
+    throttle_classes = [UserRateThrottle]
     permission_classes = (IsAuthenticated,)
     serializer_class = UserSerializer
 
 class UpdateUserPassword(generics.RetrieveUpdateAPIView):
+    throttle_classes = [UserRateThrottle]
     permission_classes = (IsAuthenticated,)
     serializer_class = UserSerializer
 
@@ -131,6 +133,7 @@ class UpdateUserPassword(generics.RetrieveUpdateAPIView):
 
 
 class CreateUserView(generics.CreateAPIView):
+    throttle_classes = [UserRateThrottle]
     permission_classes = (IsAdminUser,)
     serializer_class = UserSerializer
 
@@ -147,6 +150,7 @@ class UserDetailsView(generics.RetrieveAPIView):
 
 
 class UpdateUserView(generics.UpdateAPIView):
+    throttle_classes = [UserRateThrottle]
     permission_classes = (IsAdminUser,)
     queryset = CustomUser.objects.all()
     serializer_class = UserSerializer
@@ -159,20 +163,3 @@ class DeleteUserView(generics.DestroyAPIView):
 
 
 
-# class PasswordResetView(PasswordResetView):
-#     permission_classes = (IsAuthenticated,)
-
-#     def post(self, request, *args, **kwargs):
-#         """
-#         Send a password reset email to the user.
-#         """
-#         email = request.data["email"]
-
-#         user = get_user_by_email(email)
-#         if not user:
-#             raise NotFound("User not found")
-
-#         token = generate_password_reset_token(user)
-#         send_password_reset_email(user, token)
-
-#         return Response(status=status.HTTP_202_ACCEPTED)

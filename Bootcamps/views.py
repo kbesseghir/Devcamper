@@ -9,6 +9,8 @@ from permission import *
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.parsers import FileUploadParser
+from rest_framework.throttling import UserRateThrottle
+
 
 
 class CustomPagination(PageNumberPagination):
@@ -30,6 +32,8 @@ class BootcampDetail(generics.RetrieveAPIView):
 
 
 class CreateBootcamp(generics.CreateAPIView):
+    throttle_classes = [UserRateThrottle]
+
     queryset = Bootcamp.objects.all()
     serializer_class = BootcampSerializer
     permission_classes = [IsAuthenticated]
@@ -51,6 +55,8 @@ class CreateBootcamp(generics.CreateAPIView):
 
 
 class UpdateBootcamp(generics.UpdateAPIView):
+    throttle_classes = [UserRateThrottle]
+
     queryset=Bootcamp.objects.all()
     serializer_class = BootcampSerializer
     permission_classes = [IsAuthenticated]
@@ -88,6 +94,8 @@ class DeleteBootcamp(generics.DestroyAPIView):
 
 
 class UploadBootcampPhoto(generics.CreateAPIView):
+    throttle_classes = [UserRateThrottle]
+
     queryset = Bootcamp.objects.all()
     serializer_class = BootcampSerializer
     permission_classes = [IsAuthenticated]

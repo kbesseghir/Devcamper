@@ -8,6 +8,8 @@ from rest_framework import status
 from .models import *
 from rest_framework import generics
 from .serializers import *
+from rest_framework.throttling import UserRateThrottle
+
 
 
 
@@ -31,6 +33,7 @@ class CourseDetail(generics.RetrieveAPIView):
     
 
 class CreateCourse(generics.CreateAPIView):
+    throttle_classes = [UserRateThrottle]
     queryset = Course.objects.all()
     serializer_class = CourseSerializer
     permission_classes = [IsOwnerOrAdmin]
@@ -46,6 +49,7 @@ class CreateCourse(generics.CreateAPIView):
 
 
 class UpdateCourse(generics.RetrieveUpdateAPIView):
+    throttle_classes = [UserRateThrottle]
     queryset = Course.objects.all()
     serializer_class = CourseSerializer
     permission_classes = [IsOwnerOrAdmin]  # Use the custom permission class

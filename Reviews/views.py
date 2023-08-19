@@ -8,6 +8,8 @@ from rest_framework import status
 from .models import *
 from rest_framework import generics
 from .serializers import *
+from rest_framework.throttling import UserRateThrottle
+
 
 class ListBootcampReviews(generics.ListAPIView):
     serializer_class = ReviewSerializer
@@ -37,6 +39,8 @@ class ReviewDetail(generics.RetrieveAPIView):
 
 
 class CreateReview(generics.CreateAPIView):
+    throttle_classes = [UserRateThrottle]
+
     queryset = Review.objects.all()
     serializer_class = ReviewSerializer
     permission_classes = [IsAuthenticated]
@@ -57,6 +61,8 @@ class CreateReview(generics.CreateAPIView):
 
 
 class UpdateReview(generics.RetrieveUpdateAPIView):
+    throttle_classes = [UserRateThrottle]
+
     queryset = Review.objects.all()
     serializer_class = ReviewSerializer
     permission_classes = [IsOwner]  # Use the custom permission class

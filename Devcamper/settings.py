@@ -1,6 +1,6 @@
 
 
-
+from decouple import config
 from datetime import timedelta
 from pathlib import Path
 
@@ -94,11 +94,11 @@ WSGI_APPLICATION = 'Devcamper.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'dev',
-        'USER': 'postgres',
-        'PASSWORD': 'newpassword',
-        'HOST': 'localhost',  # Use 'localhost' for a local database
-        'PORT': '5432',       # Default PostgreSQL port
+        'NAME': config('DB_NAME'),
+        'USER': config('DB_USER'),
+        'PASSWORD': config('DB_PASSWORD'),
+        'HOST': config('DB_HOST', default='localhost'),
+        'PORT': config('DB_PORT', default='5432'),
     }
 }
 
@@ -177,12 +177,28 @@ LOGGING = {
 }
 
 CORS_ALLOWED_ORIGINS = [
-    "http://localhost:3000",  # Add your frontend's origin
+    "http://localhost:3000",  
 ]
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_PORT = 587
-EMAIL_USE_TLS = True
-EMAIL_HOST_USER = 'kheirabesseghir06@gmail.com'
-EMAIL_HOST_PASSWORD = 'uxrhajpudkrztvmp'
+EMAIL_HOST = config('EMAIL_HOST')
+EMAIL_PORT = config('EMAIL_PORT', default=587, cast=int)
+EMAIL_USE_TLS = config('EMAIL_USE_TLS', default=True, cast=bool)
+EMAIL_HOST_USER = config('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD')
+
+
+
+#  security-related headers to HTTP responses
+SECURE_BROWSER_XSS_FILTER = True
+SECURE_CONTENT_TYPE_NOSNIFF = True
+SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+SECURE_HSTS_SECONDS = 31536000  # 1 year in seconds
+SECURE_REDIRECT_EXEMPT = []  
+
+# Content Security Policy (CSP)
+CSP_DEFAULT_SRC = ("'self'",)
+CSP_SCRIPT_SRC = ("'self'", "trusted-cdn.com")
+
+#  XSS protection for older Internet Explorer versions
+SECURE_REFERRER_POLICY = "same-origin"
