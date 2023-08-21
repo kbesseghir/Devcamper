@@ -3,6 +3,8 @@ from Authentication.models import CustomUser
 from django.contrib.gis.db import models
 from django.contrib.gis.db.models import PointField
 from django.core.validators import MinValueValidator,MaxValueValidator
+from Courses.models import Course
+from Reviews.models import Review
 
 from django.db import models
 from django.utils.text import slugify
@@ -43,32 +45,30 @@ class Bootcamp(models.Model):
     
     def save(self, *args, **kwargs):
         self.slug = slugify(self.name)
-        if self.address:
-            geolocator = Nominatim(user_agent='Devcamper_app')
-            location = geolocator.geocode(self.address)
-            if location:
-                self.coordinates = f'POINT({location.longitude} {location.latitude})'
-                self.formatted_address = location.address
-                self.street = location.raw.get('address', {}).get('road', '')
-                self.city = location.raw.get('address', {}).get('city', '')
-                self.state = location.raw.get('address', {}).get('state', '')
-                self.zipcode = location.raw.get('address', {}).get('postcode', '')
-                self.country = location.raw.get('address', {}).get('country', '')
+
+        # if self.address:
+        #     geolocator = Nominatim(user_agent='Devcamper_app')
+        #     location = geolocator.geocode(self.address)
+        #     if location:
+        #         self.coordinates = f'POINT({location.longitude} {location.latitude})'
+        #         self.formatted_address = location.address
+        #         self.street = location.raw.get('address', {}).get('road', '')
+        #         self.city = location.raw.get('address', {}).get('city', '')
+        #         self.state = location.raw.get('address', {}).get('state', '')
+        #         self.zipcode = location.raw.get('address', {}).get('postcode', '')
+        #         self.country = location.raw.get('address', {}).get('country', '')
         super().save(*args, **kwargs)
         
-    # def delete(self, *args, **kwargs):
-    #     Course.objects.filter(bootcamp=self).delete()
-    #     Review.objects.filter(bootcamp=self).delete()
-    #     super().delete(*args, **kwargs)
+    def delete(self, *args, **kwargs):
+        Course.objects.filter(bootcamp=self).delete()
+        Review.objects.filter(bootcamp=self).delete()
+        super().delete(*args, **kwargs)
 
 class Career(models.Model):
     name = models.CharField(max_length=100, unique=True)
 
 
-    # Define other course fields
 
-class Review(models.Model):
-    bootcamp = models.ForeignKey(Bootcamp, on_delete=models.CASCADE, related_name='reviews')
-    # Define other review fields
+
 
 

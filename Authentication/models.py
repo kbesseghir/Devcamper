@@ -40,9 +40,9 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     # two_factor_code = models.CharField(max_length=6, blank=True)
     # two_factor_code_expire = models.DateTimeField(null=True, blank=True)
     # two_factor_enable = models.BooleanField(default=False)
-    is_active = models.BooleanField(default=True)  # Add this attribute
-    is_staff = models.BooleanField(default=False)  # Add this attribute
-    is_superuser = models.BooleanField(default=False)  # Add this attribute
+    is_active = models.BooleanField(default=True)  
+    is_staff = models.BooleanField(default=False)  
+    is_superuser = models.BooleanField(default=False)  
 
 
     created_at = models.DateTimeField(auto_now_add=True)

@@ -28,7 +28,7 @@ class AllBootcamp(generics.ListAPIView):
     
 class BootcampDetail(generics.RetrieveAPIView):
     queryset =Bootcamp.objects.all()
-    Serializer= BootcampSerializer
+    serializer_class = BootcampSerializer  
 
 
 class CreateBootcamp(generics.CreateAPIView):

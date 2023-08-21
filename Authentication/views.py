@@ -94,7 +94,7 @@ class UserLogout(APIView):
 
 
 class GetCurrentUser(generics.RetrieveAPIView):
-    permission_classes = (IsAuthenticated)
+    permission_classes =(IsAuthenticated,)
     serializer_class = UserSerializer
 
     def get_object(self):
@@ -108,25 +108,26 @@ class UpdateUserInfo(generics.RetrieveUpdateAPIView):
 class UpdateUserPassword(generics.RetrieveUpdateAPIView):
     throttle_classes = [UserRateThrottle]
     permission_classes = (IsAuthenticated,)
-    serializer_class = UserSerializer
+    serializer_class = UpdatePasswordSerializer
+    queryset = CustomUser.objects.all()
 
-
-    def update (self,request,**kwargs):
-        user=self.get_object()
-        serializer = self.get_serializer(date=request.data)
+    
+    def update(self, request, *args, **kwargs):
+        user = self.get_object()  # Fetch the authenticated user
+        serializer = self.get_serializer(user, data=request.data)
 
         if serializer.is_valid():
-
-            old_password=serializer.validate_data['old_password']
-            if not user.checke_password(old_password):
+            old_password = serializer.validated_data.get('old_password')
+            if not user.check_password(old_password):
                 return Response({'error': 'Old password is incorrect.'}, status=status.HTTP_400_BAD_REQUEST)
             
-            new_password = serializer.validate_data['new_password']
+            new_password = serializer.validated_data.get('new_password')
             user.set_password(new_password)
             user.save()
             return Response({'message': 'Password updated successfully.'}, status=status.HTTP_200_OK)
         else:
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST) 
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 
 
 

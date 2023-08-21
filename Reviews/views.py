@@ -47,8 +47,11 @@ class CreateReview(generics.CreateAPIView):
 
 
     def create(self, request, *args, **kwargs):
+        print(request.user.role)
 
-        if request.user.role == 'publisher' :
+
+        if request.user.role != 'user' :
+                print(request.user.role)
                 return Response({'message': 'You can nott create a review.'}, status=status.HTTP_400_BAD_REQUEST)
 
         serializer = self.get_serializer(data=request.data)

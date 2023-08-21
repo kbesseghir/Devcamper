@@ -7,6 +7,6 @@ urlpatterns = [
    path('CreateBootcamp/',CreateBootcamp.as_view(), name='create-bootcamp'),
    path('update/<int:pk>/', UpdateBootcamp.as_view(), name='bootcamp-update'),
    path('delete/<int:pk>/', DeleteBootcamp.as_view(), name='bootcamp-delete'),
-   path('bootcamps/<int:pk>/upload-photo/', UploadBootcampPhoto.as_view(), name='upload-bootcamp-photo'),
+   path('<int:pk>/upload-photo/', UploadBootcampPhoto.as_view(), name='upload-bootcamp-photo'),
 
 ]

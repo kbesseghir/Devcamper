@@ -1,13 +1,11 @@
 from django.db import models
-from Bootcamps.models import *
-from Authentication.models import *
+from Authentication.models import CustomUser
 from django.db.models.signals import post_save, post_delete
 from django.dispatch import receiver
 
-class Course(models.Model):
+from django.core.validators import MinValueValidator
 
 
-    from django.core.validators import MinValueValidator
 
 class Course(models.Model):
     title = models.CharField(max_length=255)
@@ -21,7 +19,7 @@ class Course(models.Model):
           ])
     scholarship_available = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
-    bootcamp = models.ForeignKey(Bootcamp, on_delete=models.CASCADE, related_name='courses')
+    bootcamp = models.ForeignKey('Bootcamps.Bootcamp', on_delete=models.CASCADE)
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
 
     class Meta:
